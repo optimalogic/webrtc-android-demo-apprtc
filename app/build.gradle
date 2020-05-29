@@ -1,14 +1,22 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 26
+    compileSdkVersion 28
     defaultConfig {
         applicationId "org.appspot.apprtc"
-        minSdkVersion 18
-        targetSdkVersion 22
+        minSdkVersion 26
+        //noinspection ExpiredTargetSdkVersion
+        targetSdkVersion 28
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        externalNativeBuild {
+            cmake {
+                arguments "-DANDROID_STL=c++_shared", "-DANDROID_ARM_NEON=1", "-DANDROID_TOOLCHAIN=clang"
+                cFlags "-D__STDC_FORMAT_MACROS"
+                cppFlags "-fexceptions", "-frtti"
+            }
+        }
     }
     buildTypes {
         release {
@@ -16,7 +24,13 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
-
+    externalNativeBuild {
+        cmake {
+            path "CMakeLists.txt"
+            version "3.16.5"
+            // targets "native-lib-demo"
+        }
+    }
     sourceSets.main {
         jniLibs.srcDir 'libs'
         jni.srcDirs = [] //disable automatic ndk-build call
@@ -29,9 +43,13 @@ android {
 }
 
 dependencies {
+    implementation (name:'google-webrtc-M79', ext:'aar');
+    implementation 'androidx.annotation:annotation:1.1.0'
+    implementation 'androidx.appcompat:appcompat:1.0.2';
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation 'com.android.support.constraint:constraint-layout:1.0.2'
-    testImplementation 'junit:junit:4.12'
-    androidTestImplementation 'com.android.support.test:runner:1.0.1'
-    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
+    implementation 'com.android.support.constraint:constraint-layout:1.1.3'
+    testImplementation 'junit:junit:4.13'
+    androidTestImplementation 'com.android.support.test:runner:1.0.2'
+    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+    implementation 'org.jetbrains:annotations:15.0'
 }
